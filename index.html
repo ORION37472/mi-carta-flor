@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flor Animada con Carta de Amor</title>
+  <style>
+    body {
+      background: #fef6fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+      font-family: sans-serif;
+      text-align: center;
+      overflow: hidden; /* Para la cascada */
+    }
+
+    .flower {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      animation: spin 5s linear infinite;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .petal {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: pink;
+      border-radius: 50%;
+      top: 45px;
+      left: 45px;
+      transform-origin: 30px 30px;
+    }
+
+    .petal:nth-child(1) { transform: rotate(0deg) translateX(50px); }
+    .petal:nth-child(2) { transform: rotate(72deg) translateX(50px); }
+    .petal:nth-child(3) { transform: rotate(144deg) translateX(50px); }
+    .petal:nth-child(4) { transform: rotate(216deg) translateX(50px); }
+    .petal:nth-child(5) { transform: rotate(288deg) translateX(50px); }
+
+    .center {
+      position: absolute;
+      top: 60px;
+      left: 60px;
+      width: 30px;
+      height: 30px;
+      background: yellow;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    #boton {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: white;
+      background-color: #b83b5e;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      display: none;
+      z-index: 2;
+    }
+
+    #carta {
+      margin-top: 20px;
+      padding: 20px;
+      background: #fff0f6;
+      border-radius: 15px;
+      width: 300px;
+      display: none;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      animation: fadeIn 1s ease forwards;
+      z-index: 2;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cascada */
+    .cascada {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .cascada span {
+      position: absolute;
+      top: -50px;
+      font-size: 1.2em;
+      color: #b83b5e;
+      animation: caer linear infinite;
+    }
+
+    @keyframes caer {
+      from { transform: translateY(-50px); opacity: 1; }
+      to { transform: translateY(100vh); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cascada"></div>
+
+  <div class="flower" onclick="mostrarBoton()">
+    <div class="petal"></div>
+    <div class="petal"></div>
+    <div class="petal"></div>
+    <div class="petal"></div>
+    <div class="petal"></div>
+    <div class="center"></div>
+  </div>
+
+  <button id="boton" onclick="mostrarCarta()">toca aqui pelusita :3</button>
+
+  <div id="carta">
+    <h2>💖 Carta de Amor 💖</h2>
+    <p>
+      Desde que te conocí, mi vida se plasmó en tu mirada.<br>
+      Tus ojos bellos, tu sonrisa y tu bella mirada de enojona me cautivaron de forma increíble.<br>
+      Espero que tu presencia y tu carisma se mantengan siempre a mi lado.<br>
+      Si un día llegas a sentirte mal o empiezas a dudar de ti, recuerda lo 
+      muchooooooooooooooooooooooooooooooooooooooooooooooooooote especial 
+      que eres para mí. Nunca te vayas de mi vida. Я тебя люблю. 🌸
+    </p>
+  </div>
+
+  <!-- Audio de Mujer Amante (oculto) -->
+  <audio id="musica" src="MujerAmante.mp3" loop></audio>
+
+  <script>
+    function mostrarBoton() {
+      document.getElementById('boton').style.display = 'inline-block';
+      document.getElementById('musica').play();
+    }
+
+    function mostrarCarta() {
+      document.getElementById('carta').style.display = 'block';
+      document.querySelector('.flower').style.animation = 'none';
+    }
+
+    // Generar cascada
+    const cascadaContainer = document.querySelector('.cascada');
+
+    function crearCascada() {
+      const span = document.createElement('span');
+      span.textContent = 'te amo marbella :3';
+      span.style.left = Math.random() * window.innerWidth + 'px';
+      span.style.animationDuration = (3 + Math.random() * 2) + 's'; // entre 3 y 5s
+      cascadaContainer.appendChild(span);
+
+      setTimeout(() => {
+        cascadaContainer.removeChild(span);
+      }, 5000);
+    }
+
+    setInterval(crearCascada, 500);
+  </script>
+</body>
+</html>
