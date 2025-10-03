@@ -1,177 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flor Animada con Carta de Amor</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Imagen saliendo de una carta</title>
   <style>
-    body {
-      background: #fef6fb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      flex-direction: column;
-      font-family: sans-serif;
-      text-align: center;
-      overflow: hidden; /* Para la cascada */
+    :root{ --bg:#eef2f7; --env:#ffffff; --accent:#3b82f6; }
+    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--bg),#dfe8f6);font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    .scene{width:360px;height:280px;display:flex;align-items:center;justify-content:center;position:relative}
+
+    /* Sobre la carta */
+    .envelope{width:300px;height:180px;background:var(--env);border-radius:8px;box-shadow:0 12px 30px rgba(20,40,80,.12);position:relative;overflow:hidden}
+
+    /* Imagen dentro de la carta */
+    .photo-wrap{position:absolute;left:50%;transform:translateX(-50%);bottom:8px;width:86%;height:68%;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+    .photo{
+      width:120%;height:auto;max-height:360px;border-radius:6px;transform:translateY(60%);transition:transform 700ms cubic-bezier(.2,.9,.3,1);box-shadow:0 10px 24px rgba(30,60,120,.12);object-fit:cover
     }
 
-    .flower {
-      position: relative;
-      width: 150px;
-      height: 150px;
-      animation: spin 5s linear infinite;
-      cursor: pointer;
-      z-index: 2;
+    /* Tapa (flap) de la carta */
+    .flap{
+      position:absolute;left:0;right:0;top:-2px;height:110px;pointer-events:none;display:flex;align-items:flex-start;justify-content:center;transition:transform 600ms cubic-bezier(.2,.9,.3,1);
     }
+    .flap svg{width:100%;height:110px;display:block}
 
-    .petal {
-      position: absolute;
-      width: 60px;
-      height: 60px;
-      background: pink;
-      border-radius: 50%;
-      top: 45px;
-      left: 45px;
-      transform-origin: 30px 30px;
-    }
+    /* Estado "abierto" */
+    .envelope.open .photo{transform:translateY(-6%)}
+    .envelope.open .flap{transform:translateY(-62%) rotateX(18deg)}
 
-    .petal:nth-child(1) { transform: rotate(0deg) translateX(50px); }
-    .petal:nth-child(2) { transform: rotate(72deg) translateX(50px); }
-    .petal:nth-child(3) { transform: rotate(144deg) translateX(50px); }
-    .petal:nth-child(4) { transform: rotate(216deg) translateX(50px); }
-    .petal:nth-child(5) { transform: rotate(288deg) translateX(50px); }
+    /* Control */
+    .controls{position:absolute;right:0;left:0;bottom:-48px;display:flex;justify-content:center;gap:12px}
+    button{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(59,130,246,.2)}
+    button.secondary{background:#fff;color:#1f2937;border:1px solid rgba(15,23,42,.06)}
 
-    .center {
-      position: absolute;
-      top: 60px;
-      left: 60px;
-      width: 30px;
-      height: 30px;
-      background: yellow;
-      border-radius: 50%;
-      z-index: 1;
-    }
+    /* Pequeño detalle: sello */
+    .stamp{position:absolute;right:12px;top:18px;width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#6ea8ff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;box-shadow:0 8px 20px rgba(59,130,246,.12)}
 
-    #boton {
-      margin-top: 20px;
-      font-size: 1.2em;
-      color: white;
-      background-color: #b83b5e;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 20px;
-      cursor: pointer;
-      display: none;
-      z-index: 2;
-    }
-
-    #carta {
-      margin-top: 20px;
-      padding: 20px;
-      background: #fff0f6;
-      border-radius: 15px;
-      width: 300px;
-      display: none;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      animation: fadeIn 1s ease forwards;
-      z-index: 2;
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Cascada */
-    .cascada {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 1;
-    }
-
-    .cascada span {
-      position: absolute;
-      top: -50px;
-      font-size: 1.2em;
-      color: #b83b5e;
-      animation: caer linear infinite;
-    }
-
-    @keyframes caer {
-      from { transform: translateY(-50px); opacity: 1; }
-      to { transform: translateY(100vh); opacity: 0; }
-    }
+    /* Responsivo */
+    @media (max-width:420px){.scene{transform:scale(.95)} }
   </style>
 </head>
 <body>
-  <div class="cascada"></div>
+  <div class="scene">
+    <div class="envelope" id="envelope">
+      <div class="stamp">OK</div>
 
-  <div class="flower" onclick="mostrarBoton()">
-    <div class="petal"></div>
-    <div class="petal"></div>
-    <div class="petal"></div>
-    <div class="petal"></div>
-    <div class="petal"></div>
-    <div class="center"></div>
+      <div class="photo-wrap">
+        <!-- Ahora la imagen viene de tu repositorio de GitHub -->
+        <img id="photo" class="photo" src="https://raw.githubusercontent.com/ORION37472/imagen/main/imagen.png" alt="Foto saliendo de la carta">
+      </div>
+
+      <div class="flap" aria-hidden="true">
+        <!-- flap: triángulo con sombra -->
+        <svg viewBox="0 0 600 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g" x1="0" x2="1">
+              <stop offset="0" stop-color="#f8fafc" />
+              <stop offset="1" stop-color="#eef2f7" />
+            </linearGradient>
+            <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#0b1727" flood-opacity="0.08"/>
+            </filter>
+          </defs>
+          <g filter="url(#s)">
+            <path d="M0,150 L300,18 L600,150 L600,200 L0,200 Z" fill="url(#g)" stroke="#e6eefb" />
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="toggle">Abrir / Cerrar</button>
+    </div>
   </div>
-
-  <button id="boton" onclick="mostrarCarta()">toca aqui pelusita :3</button>
-
-  <div id="carta">
-    <h2>💖 Carta de Amor 💖</h2>
-    <p>
-      Desde que te conocí, mi vida se plasmó en tu mirada.<br>
-      Tus ojos bellos, tu sonrisa y tu bella mirada de enojona me cautivaron de forma increíble.<br>
-      Espero que tu presencia y tu carisma se mantengan siempre a mi lado.<br>
-      Si un día llegas a sentirte mal o empiezas a dudar de ti, recuerda lo 
-      muchooooooooooooooooooooooooooooooooooooooooooooooooooote especial 
-      que eres para mí. Nunca te vayas de mi vida. Я тебя люблю. 🌸
-    </p>
-  </div>
-
-
-  <audio id="mujer amante" src="index.mp3" loop></audio>
 
   <script>
-    function mostrarBoton() {
-      document.getElementById('boton').style.display = 'inline-block';
-      document.getElementById('musica').play();
-    }
+    const envelope = document.getElementById('envelope');
+    const toggle = document.getElementById('toggle');
 
-    function mostrarCarta() {
-      document.getElementById('carta').style.display = 'block';
-      document.querySelector('.flower').style.animation = 'none';
-    }
+    toggle.addEventListener('click', ()=>{
+      envelope.classList.toggle('open');
+    });
 
-    // Generar cascada
-    const cascadaContainer = document.querySelector('.cascada');
-
-    function crearCascada() {
-      const span = document.createElement('span');
-      span.textContent = 'te amo marbella :3';
-      span.style.left = Math.random() * window.innerWidth + 'px';
-      span.style.animationDuration = (3 + Math.random() * 2) + 's'; // entre 3 y 5s
-      cascadaContainer.appendChild(span);
-
-      setTimeout(() => {
-        cascadaContainer.removeChild(span);
-      }, 5000);
-    }
-
-    setInterval(crearCascada, 500);
+    // Apertura al pasar el ratón (opcional)
+    envelope.addEventListener('mouseenter', ()=> envelope.classList.add('open'));
+    envelope.addEventListener('mouseleave', ()=> envelope.classList.remove('open'));
   </script>
 </body>
 </html>
